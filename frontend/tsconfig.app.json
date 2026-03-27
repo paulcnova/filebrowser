@@ -24,6 +24,8 @@
     // Version 0.8.0 of @vue/tsconfig enabled this automatically.
     // Disabling for now since it's causing quite a lot of errors.
     // Should be revisited.
-    "noUncheckedIndexedAccess": false
+    "noUncheckedIndexedAccess": false,
+    "lib": ["ES2015", "ESNext", "DOM", "DOM.Iterable"],
+    "target": "esnext"
   }
 }

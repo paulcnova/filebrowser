@@ -80,48 +80,8 @@
 				/>
 			</template>
 		</header-bar>
-
-		<div
-			v-if="isMobile"
-			id="file-selection"
-			:class="{
-				'file-selection-margin-bottom': fileStore.multiple,
-			}"
-		>
-			<span v-if="fileStore.selectedCount > 0">
-				{{ t("prompts.filesSelected", fileStore.selectedCount) }}
-			</span>
-			<action
-				v-if="headerButtons.share"
-				icon="share"
-				:label="t('buttons.share')"
-				show="share"
-			/>
-			<action
-				v-if="headerButtons.rename"
-				icon="mode_edit"
-				:label="t('buttons.rename')"
-				show="rename"
-			/>
-			<action
-				v-if="headerButtons.copy"
-				icon="content_copy"
-				:label="t('buttons.copyFile')"
-				show="copy"
-			/>
-			<action
-				v-if="headerButtons.move"
-				icon="forward"
-				:label="t('buttons.moveFile')"
-				show="move"
-			/>
-			<action
-				v-if="headerButtons.delete"
-				icon="delete"
-				:label="t('buttons.delete')"
-				show="delete"
-			/>
-		</div>
+		
+		<file-listing-mobile v-if="isMobile" :translate="t" :header-buttons="headerButtons"/>
 
 		<div v-if="layoutStore.loading">
 			<h2 class="message delayed">
@@ -370,6 +330,7 @@ import { useRoute, onBeforeRouteUpdate } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { storeToRefs } from "pinia";
 import { removePrefix } from "@/api/utils";
+import FileListingMobile from "./FileListing/FileListing.Mobile.vue";
 
 const showLimit = ref<number>(50);
 const columnWidth = ref<number>(280);
@@ -392,6 +353,8 @@ const route = useRoute();
 onBeforeRouteUpdate(() => {
 	hideContextMenu();
 });
+
+console.log(authStore);
 
 const { t } = useI18n();
 
