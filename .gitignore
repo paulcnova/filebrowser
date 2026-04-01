@@ -30,6 +30,7 @@ yarn-error.log*
 *.sw*
 bin/
 build/
+test-env/
 
 # Vue distributable files
 /frontend/dist/*
