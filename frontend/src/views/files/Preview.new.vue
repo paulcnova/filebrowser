@@ -4,7 +4,6 @@
 		<div class="preview">
 			<VideoPlayer
 				v-if="fileStore.req?.type == 'video'"
-				ref="player"
 				:source="previewURL"
 				:subtitles="subtitles"
 				:options="videoOptions"

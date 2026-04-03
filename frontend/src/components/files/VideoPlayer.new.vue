@@ -15,6 +15,10 @@
 		<media-controls>
 			<media-controls-group class="vds-controls-group">
 				<action icon="close" @action="close()"/>
+				<action v-if="authStore.user?.perm.download"
+					icon="open_in_new"
+					@action="openDirect"
+				/>
 			</media-controls-group>
 			<div class="vds-controls-spacer"></div>
 			<media-controls-group class="vds-controls-group center-group">
@@ -49,10 +53,13 @@
 	import Action from "../header/Action.vue";
 	import { defineCustomElement, MediaControlsElement, MediaControlsGroupElement, MediaPlayButtonElement, MediaPlayerElement, MediaSeekButtonElement, MediaVideoLayoutElement } from "vidstack/elements";
 	import type { MediaCanPlayEvent } from "vidstack/types/vidstack-tX8MEPiY.js";
-	import { ref, onMounted } from "vue";
+	import { ref, onMounted, computed } from "vue";
 	import { useScreenOrientation } from "@vueuse/core";
 	import { useRoute, useRouter } from 'vue-router';
 	import url from '@/utils/url';
+	import { useAuthStore } from "@/stores/auth";
+	import { useFileStore } from "@/stores/file";
+	import { files as api } from "@/api";
 	
 	const videoPlayer = ref<HTMLElement | null>(null);
 	const props = withDefaults(
@@ -98,10 +105,17 @@
 	};
 	const route = useRoute();
 	const router = useRouter();
+	const authStore = useAuthStore();
+	const fileStore = useFileStore();
 	const close = () => {
 		const uri = url.removeLastDir(route.path) + '/';
 		router.push({ path: uri });
 	};
+	const directURL = computed(() => fileStore.req
+		? api.getDownloadURL(fileStore.req, true)
+		: ""
+	);
+	const openDirect = () => window.open(directURL.value);
 	
 	defineCustomElement(MediaVideoLayoutElement);
 	defineCustomElement(MediaPlayerElement);
