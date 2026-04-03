@@ -13,7 +13,9 @@
 		</media-provider>
 		<media-video-layout class="default-vds-layout"></media-video-layout>
 		<media-controls>
-			<media-controls-group class="vds-controls-group">TOP</media-controls-group>
+			<media-controls-group class="vds-controls-group">
+				<action icon="close" @action="close()"/>
+			</media-controls-group>
 			<div class="vds-controls-spacer"></div>
 			<media-controls-group class="vds-controls-group center-group">
 				<media-seek-button seconds="-10" class="media-button">
@@ -44,10 +46,13 @@
 <script setup lang="ts">
 	import "vidstack/bundle";
 	import "vidstack/icons";
+	import Action from "../header/Action.vue";
 	import { defineCustomElement, MediaControlsElement, MediaControlsGroupElement, MediaPlayButtonElement, MediaPlayerElement, MediaSeekButtonElement, MediaVideoLayoutElement } from "vidstack/elements";
 	import type { MediaCanPlayEvent } from "vidstack/types/vidstack-tX8MEPiY.js";
 	import { ref, onMounted } from "vue";
 	import { useScreenOrientation } from "@vueuse/core";
+	import { useRoute, useRouter } from 'vue-router';
+	import url from '@/utils/url';
 	
 	const videoPlayer = ref<HTMLElement | null>(null);
 	const props = withDefaults(
@@ -90,6 +95,12 @@
 		} catch {}
 		instance?.controls.show();
 		instance?.play();
+	};
+	const route = useRoute();
+	const router = useRouter();
+	const close = () => {
+		const uri = url.removeLastDir(route.path) + '/';
+		router.push({ path: uri });
 	};
 	
 	defineCustomElement(MediaVideoLayoutElement);

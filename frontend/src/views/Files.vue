@@ -47,7 +47,7 @@ import { StatusError } from "@/api/utils";
 import { name } from "../utils/constants";
 
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
-const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
+const Preview = defineAsyncComponent(() => import("@/views/files/Preview.new.vue"));
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
