@@ -13,8 +13,9 @@
 		</media-provider>
 		<media-video-layout class="default-vds-layout"></media-video-layout>
 		<media-controls>
-			<media-controls-group class="vds-controls-group">
+			<media-controls-group class="vds-controls-group top-group">
 				<action icon="close" @action="close()"/>
+				<media-title>{{ name }}</media-title>
 				<action v-if="authStore.user?.perm.download"
 					icon="open_in_new"
 					@action="openDirect"
@@ -37,7 +38,7 @@
 				
 			</media-controls-group>
 			<div class="vds-controls-spacer"></div>
-			<media-controls-group class="vds-controls-group">
+			<media-controls-group class="vds-controls-group bottom-group">
 				<!-- <media-play-button class="media-button">
 					<media-icon type="play" class="play-icon"></media-icon>
 					<media-icon type="pause" class="pause-icon"></media-icon>
@@ -51,7 +52,16 @@
 	import "vidstack/bundle";
 	import "vidstack/icons";
 	import Action from "../header/Action.vue";
-	import { defineCustomElement, MediaControlsElement, MediaControlsGroupElement, MediaPlayButtonElement, MediaPlayerElement, MediaSeekButtonElement, MediaVideoLayoutElement } from "vidstack/elements";
+	import {
+		defineCustomElement,
+		MediaControlsElement,
+		MediaControlsGroupElement,
+		MediaPlayButtonElement,
+		MediaPlayerElement,
+		MediaSeekButtonElement,
+		MediaVideoLayoutElement,
+		MediaTitleElement,
+	} from "vidstack/elements";
 	import type { MediaCanPlayEvent } from "vidstack/types/vidstack-tX8MEPiY.js";
 	import { ref, onMounted, computed } from "vue";
 	import { useScreenOrientation } from "@vueuse/core";
@@ -61,6 +71,7 @@
 	import { useFileStore } from "@/stores/file";
 	import { files as api } from "@/api";
 	
+	const name = ref<string>("");
 	const videoPlayer = ref<HTMLElement | null>(null);
 	const props = withDefaults(
 		defineProps<{
@@ -123,7 +134,29 @@
 	defineCustomElement(MediaControlsGroupElement);
 	defineCustomElement(MediaPlayButtonElement);
 	defineCustomElement(MediaSeekButtonElement);
+	defineCustomElement(MediaTitleElement);
+	
+	onMounted(() => {
+		const dirs = route.fullPath.split("/");
+		const fileName = dirs[dirs.length - 1];
+		const fileNameNoExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+		
+		name.value = decodeURIComponent(fileNameNoExtension);
+	});
 </script>
+
+<style>
+	.action i
+	{ color: var(--video-player-menu-color) !important; }
+	:root {
+		--video-player-menu-color: #d4d4d4;
+		--media-button-color: var(--video-player-menu-color);
+		--media-controls-color: var(--video-player-menu-color);
+		--media-time-color: var(--video-player-menu-color);
+		--default-color: var(--video-player-menu-color);
+		--media-slider-bg: var(--video-player-menu-color);
+	}
+</style>
 
 <style scoped>
 	.video-max {
@@ -136,99 +169,97 @@
 		--media-controls-out-transition: opacity 0.2 ease-out;
 	}
 	media-controls {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 10;
-  opacity: 0;
-  transition: opacity 0.2s ease-out;
-}
+		display: flex;
+		flex-direction: column;
+		position: absolute;
+		outline: 1px solid black;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 10;
+		opacity: 0;
+		transition: opacity 0.2s ease-out;
+	}
+	
+	media-controls-group.top-group media-title {
+		width: 100%;
+		text-align: left;
+		margin: 0 32px;
+		color: #e3e3e3;
+	}
+	
+	media-controls-group.center-group
+	{ justify-content: center; }
 
-media-controls-group.center-group {
-	justify-content: center;
-}
+	media-controls[data-visible] {
+		opacity: 1;
+		background-image: linear-gradient(
+			to top,
+			rgb(0 0 0 / 0.5),
+			10%,
+			transparent,
+			95%,
+			rgb(0 0 0 / 0.3)
+		);
+	}
 
-media-controls[data-visible] {
-  opacity: 1;
-  background-image: linear-gradient(
-    to top,
-    rgb(0 0 0 / 0.5),
-    10%,
-    transparent,
-    95%,
-    rgb(0 0 0 / 0.3)
-  );
-}
+	media-controls-group {
+		display: flex;
+		align-items: center;
+		width: 100%;
+		padding-inline: 8px;
+	}
 
-media-controls-group {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding-inline: 8px;
-}
+	.media-controls-spacer {
+		flex: 1 1 0%;
+		pointer-events: none;
+	}
+	
+	.media-button {
+		display: inline-flex;
+		position: relative;
+		justify-content: center;
+		align-items: center;
+		width: 40px;
+		height: 40px;
+		color: white;
+		border-radius: 8px;
+		margin-right: 2.5px;
+		cursor: pointer;
+		/* Browser resets. */
+		padding: 0;
+		user-select: none;
+		appearance: none;
+		background: none;
+		outline: none;
+		border: none;
+		touch-action: manipulation;
+		-webkit-user-select: none;
+		-webkit-tap-highlight-color: transparent;
+	}
 
-.media-controls-spacer {
-  flex: 1 1 0%;
-  pointer-events: none;
-}
+	.media-button.large {
+		width: 80px;
+		height: 80px;
+	}
 
+	.media-button > media-icon {
+		width: 80%;
+		height: 80%;
+		border-radius: 2px;
+	}
 
+	.media-button[data-focus] > media-icon {
+	box-shadow: var(--media-focus-ring);
+	}
 
+	@media (hover: hover) and (pointer: fine) {
+		.media-button:hover
+		{ background-color: rgb(255 255 255 / 0.2); }
+	}
 
-
-
-
-
-.media-button {
-  display: inline-flex;
-  position: relative;
-  justify-content: center;
-  align-items: center;
-  width: 40px;
-  height: 40px;
-  color: white;
-  border-radius: 8px;
-  margin-right: 2.5px;
-  cursor: pointer;
-  /* Browser resets. */
-  padding: 0;
-  user-select: none;
-  appearance: none;
-  background: none;
-  outline: none;
-  border: none;
-  touch-action: manipulation;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.media-button.large {
-	width: 80px;
-	height: 80px;
-}
-
-.media-button > media-icon {
-  width: 80%;
-  height: 80%;
-  border-radius: 2px;
-}
-
-.media-button[data-focus] > media-icon {
-  box-shadow: var(--media-focus-ring);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .media-button:hover {
-    background-color: rgb(255 255 255 / 0.2);
-  }
-}
-
-.media-button[data-paused] .pause-icon,
-.media-button:not([data-paused]) .play-icon {
-  display: none;
-}
+	.media-button[data-paused] .pause-icon,
+	.media-button:not([data-paused]) .play-icon
+	{ display: none; }
 
 </style>
