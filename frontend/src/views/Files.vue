@@ -42,12 +42,12 @@ import Breadcrumbs from "@/components/Breadcrumbs.vue";
 import Errors from "@/views/Errors.vue";
 import { useI18n } from "vue-i18n";
 import { useRoute } from "vue-router";
-import FileListing from "@/views/files/FileListing.new.vue";
+import FileListing from "@/views/files/FileListing.vue";
 import { StatusError } from "@/api/utils";
 import { name } from "../utils/constants";
 
 const Editor = defineAsyncComponent(() => import("@/views/files/Editor.vue"));
-const Preview = defineAsyncComponent(() => import("@/views/files/Preview.new.vue"));
+const Preview = defineAsyncComponent(() => import("@/views/files/Preview.vue"));
 
 const layoutStore = useLayoutStore();
 const fileStore = useFileStore();
@@ -159,6 +159,8 @@ const fetchData = async () => {
   fetchDataController = new AbortController();
   try {
     const res = await api.fetch(url, fetchDataController.signal);
+    console.log("url");
+    console.log(url);
     fileStore.updateRequest(res);
     document.title = `${res.name || t("sidebar.myFiles")} - ${t("files.files")} - ${name}`;
     layoutStore.loading = false;

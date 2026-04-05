@@ -78,6 +78,7 @@
 			source: string,
 			subtitles?: string[],
 			options?: any,
+			autoplay?: boolean,
 		}>(),
 		{
 			options: {},
@@ -112,7 +113,9 @@
 			}
 		} catch {}
 		instance?.controls.show();
-		instance?.play();
+		try {
+			instance?.play();
+		} catch {}
 	};
 	const route = useRoute();
 	const router = useRouter();
