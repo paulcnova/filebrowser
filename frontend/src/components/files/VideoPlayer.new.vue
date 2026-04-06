@@ -84,6 +84,7 @@
 			options: {},
 		}
 	);
+	const emit = defineEmits(["back"]);
 	const source = ref(props.source);
 	const subLabel = (subURL: string) => {
 		let url: URL;
@@ -124,6 +125,7 @@
 	const close = () => {
 		const uri = url.removeLastDir(route.path) + '/';
 		router.push({ path: uri });
+		emit("back");
 	};
 	const directURL = computed(() => fileStore.req
 		? api.getDownloadURL(fileStore.req, true)

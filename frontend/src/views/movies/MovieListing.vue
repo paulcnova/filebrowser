@@ -1,7 +1,7 @@
 
 <template>
 	<div class="movies" v-for="movie in movies">
-		<RouterLink :to="`/movies/${movie.id}`">
+		<RouterLink :to="`/movies/${movie.id}`" @click="tryEmit(movie.id)">
 			<div class="poster">
 				<img :src="movie.poster"/>
 			</div>
@@ -15,8 +15,13 @@
 	import { type MovieDetails, type MovieListing } from '@/interface/Listing';
 	import { RouterLink, useRoute } from 'vue-router';
 	
+	const emit = defineEmits(["update"]);
 	const movies = ref<MovieDetails[]>([]);
-	const route = useRoute();
+	
+	function tryEmit(id: string) {
+		console.log("EMIT");
+		emit("update", id);
+	}
 	
 	onMounted(async () => {
 		const listingRes = await api.fetch("/movies/movies.listing.json");

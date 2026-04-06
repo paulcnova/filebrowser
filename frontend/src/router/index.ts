@@ -16,10 +16,10 @@ import { baseURL, name } from "@/utils/constants";
 import i18n from "@/i18n";
 import { recaptcha, loginPage } from "@/utils/constants";
 import { login, validateLogin } from "@/utils/auth";
-import MovieListing from "@/views/files/MovieListing.vue";
-import Preview from "@/views/files/Preview.vue";
-import MovieDetails from "@/views/files/MovieDetails.vue";
-import MoviePlayer from "@/views/files/MoviePlayer.vue";
+import MovieListing from "@/views/movies/MovieListing.vue";
+import MovieDetails from "@/views/movies/MovieDetails.vue";
+import MoviePlayer from "@/views/movies/MoviePlayer.vue";
+import MoviesLayout from "@/views/movies/MoviesLayout.vue";
 
 const titles = {
 	Login: "sidebar.login",
@@ -55,18 +55,24 @@ const routes = [
 	},
 	{
 		path: "/movies",
-		component: MovieListing,
+		component: MoviesLayout,
 		meta: {
 			requiresAuth: true,
 		},
-	},
-	{
-		path: "/movies/:id",
-		component: MovieDetails,
-	},
-	{
-		path: "/movies/:id/view",
-		component: MoviePlayer,
+		children: [
+			{
+				path: "",
+				component: MovieListing,
+			},
+			{
+				path: ":id",
+				component: MovieDetails,
+			},
+			{
+				path: ":id/view",
+				component: MoviePlayer,
+			},
+		]
 	},
 	{
 		path: "/files",
@@ -234,7 +240,7 @@ router.beforeResolve(async (to, from, next) => {
 		}
 	}
 
-	next();
+	return next();
 });
 
 export { router, router as default };
