@@ -5,18 +5,19 @@ export interface MovieListing {
 
 export interface MovieDetails {
 	id: string,
+	imdbID: string,
 	name: string,
 	genre: string[],
 	plot: string,
 	tagline: string,
 	poster: string,
 	thumbnail: string,
-	favorite: string[],
 	file: string,
 	released: string,
 	runtime: number,
 	studio: string,
-	director: string,
+	directors: string[],
+	credits: string[],
 	cast: {
 		name: string,
 		role: string,
@@ -28,4 +29,7 @@ export interface MovieDetails {
 			votes: number,
 		}
 	},
+	collection: {
+		name: string,
+	}[],
 }

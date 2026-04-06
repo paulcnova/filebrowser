@@ -6,7 +6,6 @@
 				:source="previewURL"
 				:autoplay="autoplay"
 				:subtitles="subtitles"
-				@back="close"
 			/>
 		</div>
 	</div>
@@ -26,12 +25,11 @@
 	const props = defineProps<{
 		details?: MovieDetails
 	}>();
-	const emit = defineEmits(["update"]);
 	const response = ref<Resource>();
 	
 	onMounted(async () => {
 		if(!props.details) {
-			const listingRes = await api.fetch("/movies/movies.listing.json");
+			const listingRes = await api.fetch("/movies/movies.listing.json", undefined, false);
 			const listing = JSON.parse(listingRes.content ?? "") as MovieListing;
 			const id = route.params.id.toString();
 			
@@ -57,8 +55,4 @@
 	const autoplay = computed(() => {
 		return false;
 	});
-	
-	function close(): void {
-		emit("update", props.details?.id);
-	}
 </script>

@@ -1,10 +1,10 @@
 
 <template>
-	<main>
-		<component v-if="viewType == ViewType.Listing" :is="currentView" @update="updateView"/>
-		<component v-else-if="viewType == ViewType.Details" :is="currentView" :details="currentDetails" @update="updateView"/>
-		<component v-else-if="viewType == ViewType.Player" :is="currentView" :details="currentDetails" @update="updateView"/>
-	</main>
+	<div class="movie-container">
+		<component v-if="viewType == ViewType.Listing" :is="currentView"/>
+		<component v-else-if="viewType == ViewType.Details" :is="currentView" :details="currentDetails"/>
+		<component v-else-if="viewType == ViewType.Player" :is="currentView" :details="currentDetails"/>
+	</div>
 </template>
 
 <script setup lang="ts">
@@ -63,10 +63,13 @@
 	
 	watch(route, () => {
 		movieIndex.value = getMovieIndex();
+		const id = route.params.id ? route.params.id.toString() : undefined;
+		const player = route.fullPath.endsWith("/view") ? "view" : undefined;
+		updateView(id, player);
 	});
 	
 	onMounted(async () => {
-		const listingRes = await api.fetch("/movies/movies.listing.json");
+		const listingRes = await api.fetch("/movies/movies.listing.json", undefined, false);
 		const listing = JSON.parse(listingRes.content ?? "") as MovieListing;
 		
 		for(const id in listing) {

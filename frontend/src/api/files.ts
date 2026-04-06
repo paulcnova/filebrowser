@@ -5,9 +5,11 @@ import { upload as postTus, useTus } from "./tus";
 import { createURL, fetchURL, removePrefix, StatusError } from "./utils";
 import { isEncodableResponse, makeRawResource } from "@/utils/encodings";
 
-export async function fetch(url: string, signal?: AbortSignal) {
+export async function fetch(url: string, signal?: AbortSignal, tryRemove: boolean = true) {
 	const encoding = isEncodableResponse(url);
-	url = removePrefix(url);
+	if(tryRemove === true) {
+		url = removePrefix(url);
+	}
 	const res = await fetchURL(`/api/resources${url}`, {
 		signal,
 		headers: {
