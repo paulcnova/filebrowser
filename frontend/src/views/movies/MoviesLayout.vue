@@ -1,5 +1,13 @@
 
 <template>
+	<nav class="header">
+		<div class="search-bar">
+			<input type="text" placeholder="Search..." class="search-bar-text"/>
+			<button class="search-bar-button" type="submit">
+				<i class="material-icons">search</i>
+			</button>
+		</div>
+	</nav>
 	<div class="movie-container">
 		<component v-if="viewType == ViewType.Listing" :is="currentView"/>
 		<component v-else-if="viewType == ViewType.Details" :is="currentView" :details="currentDetails"/>
@@ -80,3 +88,43 @@
 		});
 	})
 </script>
+
+<style scoped>
+	nav.header {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 4em;
+		background-color: #adf;
+		box-shadow: 0 10px 15px 4px black;
+		z-index: 10;
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+	}
+	
+	nav.header .search-bar {
+		width: 50vw;
+		margin: 1em;
+	}
+	
+	nav.header .search-bar .search-bar-text {
+		width: 100%;
+		padding: 8px 16px;
+		border: none;
+		border-radius: 16px;
+	}
+	
+	nav.header .search-bar .search-bar-button {
+		position: absolute;
+		top: calc((4em - 24px) / 2);
+		right: calc(25vw + 4px);
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		border: none;
+		background-color: gold;
+		cursor: pointer;
+	}
+</style>
