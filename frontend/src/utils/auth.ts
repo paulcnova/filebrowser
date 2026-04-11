@@ -28,13 +28,14 @@ export function parseToken(token: string) {
 		clearTimeout(authStore.logoutTimer);
 	}
 
-	const expiresAt = new Date(data.exp! * 1000);
-	const timeout = expiresAt.getTime() - Date.now();
-	authStore.setLogoutTimer(
-		setSafeTimeout(() => {
-			logout("inactivity");
-		}, timeout)
-	);
+	// It shouldn't kick out users if they decide to watch a 2.5 hour movie.
+	// const expiresAt = new Date(data.exp! * 1000);
+	// const timeout = expiresAt.getTime() - Date.now();
+	// authStore.setLogoutTimer(
+	// 	setSafeTimeout(() => {
+	// 		logout("inactivity");
+	// 	}, timeout)
+	// );
 }
 
 export async function validateLogin() {
