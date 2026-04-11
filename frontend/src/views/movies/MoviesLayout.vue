@@ -126,5 +126,6 @@
 		border: none;
 		background-color: gold;
 		cursor: pointer;
+		margin-left: -3px;
 	}
 </style>
