@@ -87,11 +87,12 @@
 	}
 	
 	.movie-details .backdrop {
-		position: absolute;
+		position: fixed;
 		z-index: -1;
-		width: 100%;
-		/* height: 100%; */
+		width: 100vw;
+		height: 100vh;
 		background-size: cover;
+		background-position-x: center;
 		aspect-ratio: 16/9;
 		max-height: calc(100vh - 4em);
 	}
