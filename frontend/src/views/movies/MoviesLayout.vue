@@ -20,6 +20,7 @@
 	import { useRoute } from 'vue-router';
 	import { files as api } from "@/api";
 	import type { MovieDetails, MovieListing } from '@/interface/Listing';
+	import { useTitle } from '@vueuse/core';
 	
 	enum ViewType {
 		Listing = "listing",
@@ -31,6 +32,7 @@
 	const DetailsView = defineAsyncComponent(() => import("@/views/movies/MovieDetails.vue"));
 	const PlayerView = defineAsyncComponent(() => import("@/views/movies/MoviePlayer.vue"));
 	
+	const title = useTitle();
 	const route = useRoute();
 	const movies = ref<MovieDetails[]>([]);
 	const currentView = computed(() => {
@@ -50,6 +52,8 @@
 	const viewType = ref<ViewType>(getViewType());
 	const movieIndex = ref<number>(getMovieIndex());
 	
+	title.value = "Casanova - Movies";
+	
 	function getMovieIndex(id?: string): number {
 		return movies.value.findIndex(m => m.id == (id ?? `${route.params.id}`));
 	}
@@ -67,6 +71,11 @@
 				? ViewType.Details
 				: ViewType.Player
 			: ViewType.Listing;
+		switch(viewType.value) {
+			default: case ViewType.Listing: title.value = "Casanova - Movies"; break;
+			case ViewType.Details: title.value = `Casanova - ${movies.value[movieIndex.value].name}`; break;
+			case ViewType.Player: title.value = `Casanova - Watching ${movies.value[movieIndex.value].name}`; break;
+		}
 	}
 	
 	watch(route, () => {
