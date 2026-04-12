@@ -23,6 +23,7 @@ type User struct {
 	ID                    uint          `storm:"id,increment" json:"id"`
 	Username              string        `storm:"unique" json:"username"`
 	Password              string        `json:"password"`
+	Email                 string        `json:"email"`
 	Scope                 string        `json:"scope"`
 	Locale                string        `json:"locale"`
 	LockPassword          bool          `json:"lockPassword"`
@@ -31,6 +32,7 @@ type User struct {
 	RedirectAfterCopyMove bool          `json:"redirectAfterCopyMove"`
 	Perm                  Permissions   `json:"perm"`
 	Commands              []string      `json:"commands"`
+	Favorites             []string      `json:"favorites"`
 	Sorting               files.Sorting `json:"sorting"`
 	Fs                    afero.Fs      `json:"-" yaml:"-"`
 	Rules                 []rules.Rule  `json:"rules"`

@@ -96,8 +96,8 @@ export async function renew(jwt: string) {
 	}
 }
 
-export async function signup(username: string, password: string) {
-	const data = { username, password };
+export async function signup(username: string, password: string, email: string, scope: string): Promise<StatusError> {
+	const data = { username, password, email, scope };
 
 	const res = await fetch(`${baseURL}/api/signup`, {
 		method: "POST",
@@ -106,14 +106,10 @@ export async function signup(username: string, password: string) {
 		},
 		body: JSON.stringify(data),
 	});
-
-	if (res.status !== 200) {
-		const body = await res.text();
-		throw new StatusError(
-			body || `${res.status} ${res.statusText}`,
-			res.status
-		);
-	}
+	
+	const body = await res.text();
+	
+	return new StatusError(body || `${res.status} ${res.statusText}`, res.status);
 }
 
 export function logout(reason?: string) {

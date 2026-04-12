@@ -3,7 +3,6 @@ package fbhttp
 import (
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -140,12 +139,14 @@ func loginHandler(tokenExpireTime time.Duration) handleFunc {
 type signupBody struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Email    string `json:"email"`
+	Scope    string `json:"scope"`
 }
 
 var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, error) {
-	if !d.settings.Signup {
-		return http.StatusMethodNotAllowed, nil
-	}
+	// if !d.settings.Signup {
+	// 	return http.StatusMethodNotAllowed, nil
+	// }
 
 	if r.Body == nil {
 		return http.StatusBadRequest, nil
@@ -163,9 +164,13 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 
 	user := &users.User{
 		Username: info.Username,
+		Email:    info.Email,
+		Scope:    info.Scope,
 	}
 
 	d.settings.Defaults.Apply(user)
+
+	user.Scope = info.Scope
 
 	// Users signed up via the signup handler should never become admins, even
 	// if that is the default permission.
@@ -177,18 +182,6 @@ var signupHandler = func(_ http.ResponseWriter, r *http.Request, d *data) (int, 
 	}
 
 	user.Password = pwd
-	if d.settings.CreateUserDir {
-		user.Scope = ""
-	}
-
-	userHome, err := d.settings.MakeUserDir(user.Username, user.Scope, d.server.Root)
-	if err != nil {
-		log.Printf("create user: failed to mkdir user home dir: [%s]", userHome)
-		return http.StatusInternalServerError, err
-	}
-	user.Scope = userHome
-	log.Printf("new user: %s, home dir: [%s].", user.Username, userHome)
-
 	err = d.store.Users.Save(user)
 	if errors.Is(err, fberrors.ErrExist) {
 		return http.StatusConflict, err

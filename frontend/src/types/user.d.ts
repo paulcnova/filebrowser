@@ -2,6 +2,7 @@ interface IUser {
   id: number;
   username: string;
   password: string;
+  email?: string;
   scope: string;
   locale: string;
   perm: Permissions;

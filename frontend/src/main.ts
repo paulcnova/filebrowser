@@ -60,8 +60,8 @@ const toastConfig = {
   position: POSITION.BOTTOM_CENTER,
   timeout: 4000,
   closeOnClick: true,
-  pauseOnFocusLoss: true,
-  pauseOnHover: true,
+  pauseOnFocusLoss: false,
+  pauseOnHover: false,
   draggable: true,
   draggablePercent: 0.6,
   showCloseButtonOnHover: false,
@@ -97,7 +97,7 @@ app.provide("$showError", (error: Error | string, displayReport = true) => {
     },
     {
       ...toastConfig,
-      timeout: 0,
+      // timeout: 0,
       rtl: isRtl(),
     }
   );
