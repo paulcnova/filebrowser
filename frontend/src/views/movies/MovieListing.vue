@@ -4,6 +4,18 @@
 		<div v-if="width < 960" class="options">
 			<Action icon="back" class="back"/>
 			<div class="options-container">
+				<DropdownModal>
+					<div>{{ currentSorting }}</div>
+					<template v-slot:list>
+						<button v-for="item in Object.keys(sortByItems)"
+							:key="item"
+							:value="item"
+							class="sort-button-item"
+							@click="updateSorting(item, (sortByItems as any)[item])">
+							{{ item }}
+						</button>
+					</template>
+				</DropdownModal>
 				<Action icon="filter" class="filter" />
 				<Action icon="sort" class="sort" />
 			</div>
@@ -29,9 +41,17 @@
 	import { RouterLink, useRoute } from 'vue-router';
 	import { useWindowSize } from '@vueuse/core';
 	import Action from '@/components/header/Action.vue';
+	import DropdownModal from '@/components/DropdownModal.vue';
 	
 	const { width } = useWindowSize()
 	const movies = ref<MovieDetails[]>([]);
+	const sortByItems = {
+		Name: (inv: number) => movies.value.sort((left, right) => inv * left.name.localeCompare(right.name)),
+		Date: (inv: number) => movies.value.sort((left, right) => inv * left.released.localeCompare(right.released)),
+		Rating: (inv: number) => movies.value.sort((left, right) => inv * (right.ratings.tmdb?.value ?? 0) - (left.ratings.tmdb?.value ?? 0)),
+	};
+	const currentSorting = ref<string>("Name");
+	const isAscending = ref<boolean>(true);
 	
 	onMounted(async () => {
 		const listingRes = await api.fetch("/movies/movies.listing.json", undefined, false);
@@ -44,6 +64,13 @@
 			return left.name.localeCompare(right.name);
 		});
 	});
+	
+	function updateSorting(name: string, func: (inv: number) => void) {
+		const asc = currentSorting.value != name || !isAscending.value;
+		currentSorting.value = name;
+		isAscending.value = asc;
+		func(isAscending.value ? 1 : -1);
+	}
 	
 	function getProperDate(released: string): string {
 		const match = released.match(/(\d{4})\-(\d{2})-(\d{2})/);
@@ -60,6 +87,19 @@
 		return `${month[Number(match[2]) - 1]} ${Number(match[3])}, ${match[1]}`;
 	}
 </script>
+
+<style scoped>
+	.sort-button-item {
+		display: block;
+		background: none;
+		color: white;
+		border: none;
+		width: 100%;
+		height: 32px;
+		text-align: left;
+		cursor: pointer;
+	}
+</style>
 
 <style scoped>
 	@media (max-width: 960px) {
