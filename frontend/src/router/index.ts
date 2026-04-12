@@ -20,6 +20,7 @@ import MovieListing from "@/views/movies/MovieListing.vue";
 import MovieDetails from "@/views/movies/MovieDetails.vue";
 import MoviePlayer from "@/views/movies/MoviePlayer.vue";
 import MoviesLayout from "@/views/movies/MoviesLayout.vue";
+import Signup from "@/views/Signup.vue";
 
 const titles = {
 	Login: "sidebar.login",
@@ -41,6 +42,11 @@ const routes = [
 		path: "/login",
 		name: "Login",
 		component: Login,
+	},
+	{
+		path: "/signup",
+		name: "Signup",
+		component: Signup,
 	},
 	{
 		path: "/share",
