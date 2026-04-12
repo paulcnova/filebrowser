@@ -33,13 +33,7 @@
 	import { login, signup } from '@/utils/auth';
 	import { inject } from 'vue';
 	import { useRouter } from 'vue-router';
-	import {
-		name,
-		logoURL,
-		recaptcha,
-		recaptchaKey,
-		signup as signupConstant,
-	} from "@/utils/constants";
+	import { recaptcha } from "@/utils/constants";
 	
 	const router = useRouter();
 	const errorToast = inject<IToastError>("$showError")!;
@@ -72,23 +66,20 @@
 		const password: string = (document.getElementById("password") as HTMLInputElement)?.value;
 		const email: string = (document.getElementById("email") as HTMLInputElement)?.value;
 		
+		ev.preventDefault();
 		if(isNullOrEmpty(username)) {
 			errorToast("Please enter a username", false);
-			ev.preventDefault();
 			return;
 		}
 		if(isNullOrEmpty(password)) {
 			errorToast("Please enter a password");
-			ev.preventDefault();
 			return;
 		}
 		if(isNullOrEmpty(email)) {
 			errorToast("Please enter an email");
-			ev.preventDefault();
 			return;
 		}
 		
-		ev.preventDefault();
 		const err = await signup(username, password, email, !isLocal ? "/public" : "/test-env");
 		
 		if(err.status == 200) {
