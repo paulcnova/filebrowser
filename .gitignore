@@ -33,6 +33,7 @@ build/
 test-env/
 
 # Vue distributable files
+/frontend/**/secrets.ts
 /frontend/dist/*
 !/frontend/dist/.gitkeep
 

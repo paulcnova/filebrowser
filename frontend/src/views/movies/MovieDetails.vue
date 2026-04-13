@@ -12,8 +12,7 @@
 					<div class="title">{{ props.details.name }}</div>
 					<div class="details">
 						<span><Action icon="play_arrow" class="play" @click="goToPlayer()"/></span>
-						<!-- Certification doesn't exist in details. -->
-						<span class="certification">PG</span>
+						<span class="certification" v-if="props.details.certificate">{{ props.details.certificate }}</span>
 						<span class="year">{{ getYear() }}</span>
 						<span class="runtime">{{ getRuntime() }}</span>
 					</div>
@@ -32,8 +31,18 @@
 					</div>
 				</div>
 			</div>
-			<div class="other">
-				<!-- TODO: Find out what to place here -->
+			<div class="other" v-if="props.details.parentalGuide">
+				<div class="violence">
+					<span :class="`category ${props.details.parentalGuide.violence.severity.level}`">Violence &amp; Gore</span>
+					<div>{{ props.details.parentalGuide.violence.severity.level }}</div>
+					<div v-for="review in props.details.parentalGuide.violence.reviews">
+						<span v-if="!review.startsWith('[!SPOILER]')">{{ review }}</span>
+						<span class="spoiler">{{ review }}</span>
+					</div>
+				</div>
+				<div v-for="guide in props.details.parentalGuide">
+					{{ guide.category }}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -43,7 +52,9 @@
 	import Action from '@/components/header/Action.vue';
 	import type { MovieDetails } from '@/interface/Listing';
 	import router from '@/router';
+	import { tmdbAPIKey } from '@/utils/secrets';
 	import url from '@/utils/url';
+	import { computedAsync } from '@vueuse/core';
 	import { useRoute } from 'vue-router';
 	
 	const props = defineProps<{
@@ -55,7 +66,6 @@
 		
 		router.push({ path: uri, query: route.query });
 	};
-	
 	function getYear(): string {
 		if(!props.details) { return ""; }
 		return props.details.released.substring(0, 4);

@@ -1,12 +1,19 @@
 
 <template>
+	<div class="layout-backdrop movies-backdrop"></div>
 	<nav class="header">
+		<div class="icon"></div>
 		<div class="search-bar">
 			<input type="text" placeholder="Search..." class="search-bar-text"/>
 			<button class="search-bar-button" type="submit">
 				<i class="material-icons">search</i>
 			</button>
 		</div>
+		<!-- TODO: Use an icon here or something. -->
+		<RouterLink to="/settings" class="account">
+			<div class="head"></div>
+			<div class="body"></div>
+		</RouterLink>
 	</nav>
 	<div class="movie-container">
 		<component v-if="viewType == ViewType.Listing" :is="currentView"/>
@@ -17,7 +24,7 @@
 
 <script setup lang="ts">
 	import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
-	import { useRoute } from 'vue-router';
+	import { RouterLink, useRoute } from 'vue-router';
 	import { files as api } from "@/api";
 	import type { MovieDetails, MovieListing } from '@/interface/Listing';
 	import { useTitle } from '@vueuse/core';
@@ -53,6 +60,18 @@
 	const movieIndex = ref<number>(getMovieIndex());
 	
 	title.value = "Casanova - Movies";
+	
+	// (async () => {
+	// 	const imdb = await fetch("https://imdbapi.dev/titles/tt0098635/certificates", {
+	// 		method: "GET",
+	// 		headers: {
+	// 			"Accept": "application/json"
+	// 		}
+	// 	});
+		
+	// 	console.log(imdb);
+	// 	console.log(await imdb.json());
+	// })();
 	
 	function getMovieIndex(id?: string): number {
 		return movies.value.findIndex(m => m.id == (id ?? `${route.params.id}`));
@@ -98,6 +117,7 @@
 	})
 </script>
 
+<!-- Header -->
 <style scoped>
 	nav.header {
 		position: fixed;
@@ -105,20 +125,69 @@
 		left: 0;
 		width: 100vw;
 		height: 4em;
-		background-color: #adf;
-		box-shadow: 0 10px 15px 4px black;
+		background-color: #fff0a1;
+		box-shadow: 0 10px 15px 4px #0009;
 		z-index: 10;
 		display: flex;
 		flex-direction: row;
-		justify-content: center;
+		flex-wrap: nowrap;
+		align-items: center;
+		align-content: stretch;
+		justify-content: space-between;
+		padding-inline: 8px;
+	}
+</style>
+
+<!-- Fake Account Icon -->
+<style scoped>
+	nav.header .icon {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background-color: white;
+		flex-shrink: 0;
 	}
 	
+	nav.header .account {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background-color: white;
+		flex-shrink: 0;
+		overflow: hidden;
+	}
+	
+	nav.header .account .head {
+		width: 16px;
+		height: 16px;
+		position: relative;
+		left: 8px;
+		top: 4px;
+		background-color: #25f;
+		border-radius: 50%;
+	}
+	
+	nav.header .account .body {
+		width: 16px;
+		height: 32px;
+		position: relative;
+		left: 8px;
+		top: 0px;
+		border-radius: 50%;
+		background-color: #25f;
+	}
+</style>
+
+<!-- Search Bar -->
+<style scoped>
 	nav.header .search-bar {
 		width: 50vw;
 		margin: 1em;
 	}
 	
-	nav.header .search-bar .search-bar-text {
+	nav.header .search-bar input {
+		background-color: #101820;
+		color: white;
 		width: 100%;
 		padding: 8px 16px;
 		border: none;
@@ -127,14 +196,22 @@
 	
 	nav.header .search-bar .search-bar-button {
 		position: absolute;
-		top: calc((4em - 24px) / 2);
-		right: calc(25vw + 4px);
+		margin-left: -31px;
+		margin-top: 3px;
 		width: 28px;
 		height: 28px;
 		border-radius: 50%;
 		border: none;
-		background-color: gold;
+		background-color: dodgerblue;
+		color: white;
+		padding: 0;
 		cursor: pointer;
-		margin-left: -3px;
+	}
+	
+	nav.header .search-bar .search-bar-button i {
+		text-align: center;
+		width: 100%;
+		height: 100%;
+		line-height: 1.2;
 	}
 </style>

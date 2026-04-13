@@ -18,6 +18,14 @@ export interface MovieDetails {
 	studio: string,
 	directors: string[],
 	credits: string[],
+	certificate: string,
+	parentalGuide: {
+		sex: ParentalGuide,
+		violence: ParentalGuide,
+		profanity: ParentalGuide,
+		drugs: ParentalGuide,
+		scares: ParentalGuide,
+	},
 	cast: {
 		name: string,
 		role: string,
@@ -32,4 +40,14 @@ export interface MovieDetails {
 	collection: {
 		name: string,
 	}[],
+}
+
+export interface ParentalGuide {
+	reviews: string[],
+	category: string,
+	severity: {
+		level: "none" | "mild" | "moderate" | "severe",
+		voted: number,
+		max: number,
+	},
 }

@@ -16,8 +16,6 @@
 						</button>
 					</template>
 				</DropdownModal>
-				<Action icon="filter" class="filter" />
-				<Action icon="sort" class="sort" />
 			</div>
 		</div>
 		<div class="content">
@@ -199,6 +197,14 @@
 			align-content: stretch;
 			justify-content: start;
 			flex-shrink: 0;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+		
+		.content .movies .movie-entry:hover {
+			z-index: 2;
+			box-shadow: 0 0 16px dodgerblue;
+			transition: all 200ms ease-in;
 		}
 		
 		.content .movies .movie-entry > a {
