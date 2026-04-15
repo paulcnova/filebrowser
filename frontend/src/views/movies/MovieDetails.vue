@@ -31,13 +31,19 @@
 					</div>
 				</div>
 			</div>
-			<div class="other" v-if="props.details.parentalGuide">
-				<div class="violence">
-					<span :class="`category ${props.details.parentalGuide.violence.severity.level}`">Violence &amp; Gore</span>
-					<div>{{ props.details.parentalGuide.violence.severity.level }}</div>
-					<div v-for="review in props.details.parentalGuide.violence.reviews">
+			<div class="ratings-section" v-if="props.details.parentalGuide">
+				<div v-for="guide in [props.details.parentalGuide.sex, props.details.parentalGuide.violence, props.details.parentalGuide.profanity, props.details.parentalGuide.drugs, props.details.parentalGuide.scares]" :class="`parental-guide ${guide.category}`">
+					<div :class="`banner ${guide.severity.level}`">
+						<span v-if="guide.category == 'sex'" class="category">Sex &amp; Nudity</span>
+						<span v-else-if="guide.category == 'violence'" class="category">Violence &amp; Gore</span>
+						<span v-else-if="guide.category == 'profanity'" class="category">Profanity</span>
+						<span v-else-if="guide.category == 'drugs'" class="category">Alcohol, Drugs &amp; Smoking</span>
+						<span v-else-if="guide.category == 'scares'" class="category">Frightening &amp; Intense Scenes</span>
+						<div class="severity-level">{{ guide.severity.level }}</div>
+					</div>
+					<div v-for="review in guide.reviews">
 						<span v-if="!review.startsWith('[!SPOILER]')">{{ review }}</span>
-						<span class="spoiler">{{ review }}</span>
+						<!-- <span class="spoiler">{{ review }}</span> -->
 					</div>
 				</div>
 				<div v-for="guide in props.details.parentalGuide">
@@ -52,7 +58,6 @@
 	import Action from '@/components/header/Action.vue';
 	import type { MovieDetails } from '@/interface/Listing';
 	import router from '@/router';
-	import { tmdbAPIKey } from '@/utils/secrets';
 	import url from '@/utils/url';
 	import { computedAsync } from '@vueuse/core';
 	import { useRoute } from 'vue-router';
@@ -223,8 +228,26 @@
 	.movie-details .info .plot {
 		flex: 1 0 0;
 		margin-top: 8px;
-		min-height: 0;
 		text-wrap: balance;
 		font-size: 15px;
 	}
+</style>
+
+<!-- Parental Guide -->
+<style scoped>
+	.parental-guide {
+		display: flex;
+		padding: 1em;
+	}
+	
+	.parental-guide .banner {
+		display: flex;
+		padding: 4px 8px;
+		padding-right: 16px;
+	}
+	
+	.banner.none { background-color: gray; }
+	.banner.mild { background-color: green; }
+	.banner.moderate { background-color: yellow; }
+	.banner.severe { background-color: red; }
 </style>

@@ -106,6 +106,7 @@
 	
 	onMounted(async () => {
 		const listingRes = await api.fetch("/movies/movies.listing.json", undefined, false);
+		console.log(listingRes);
 		const listing = JSON.parse(listingRes.content ?? "") as MovieListing;
 		
 		for(const id in listing) {
