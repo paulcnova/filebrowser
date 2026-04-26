@@ -16,7 +16,8 @@
 		<media-controls>
 			<media-controls-group class="vds-controls-group top-group">
 				<action icon="close" @action="close()"/>
-				<media-title>{{ name }}</media-title>
+				<span class="title">{{ name }}</span>
+				<!-- <media-title>{{ name }}</media-title> -->
 				<action v-if="authStore.user?.perm.download"
 					icon="open_in_new"
 					@action="openDirect"
@@ -41,12 +42,14 @@
 			</media-controls-group>
 			
 			<div class="vds-controls-spacer"></div>
+			
 			<media-controls-group class="vds-controls-group bottom-above-group">
-				<media-time-slider class="vds-time-slider vds-slider">
-					<div class="vds-slider-track"></div>
-					<div class="vds-slider-track-fill vds-slider-track"></div>
-					<div class="vds-slider-progress vds-slider-track"></div>
-					<div class="vds-slider-thumb"></div>
+				<media-time-slider class="media-slider">
+					<div class="media-slider-track">
+						<div class="media-slider-track-fill media-slider-track"></div>
+						<div class="media-slider-progress media-slider-track"></div>
+					</div>
+					<div class="media-slider-thumb"></div>
 				</media-time-slider>
 			</media-controls-group>
 			
@@ -125,11 +128,11 @@
 	import { useFileStore } from "@/stores/file";
 	import { files as api } from "@/api";
 	
-	const name = ref<string>("");
 	const videoPlayer = ref<HTMLElement | null>(null);
 	const props = withDefaults(
 		defineProps<{
 			source: string,
+			name?: string,
 			subtitles?: string[],
 			options?: any,
 			autoplay?: boolean,
@@ -138,6 +141,7 @@
 			options: {},
 		}
 	);
+	const name = ref<string>(props.name ?? "");
 	const source = ref(props.source);
 	const subLabel = (subURL: string) => {
 		let url: URL;
@@ -200,14 +204,6 @@
 	defineCustomElement(MediaCaptionButtonElement);
 	defineCustomElement(MediaVolumeSliderElement);
 	defineCustomElement(MediaCaptionsRadioGroupElement);
-	
-	onMounted(() => {
-		const dirs = route.fullPath.split("/");
-		const fileName = dirs[dirs.length - 1];
-		const fileNameNoExtension = fileName.substring(0, fileName.lastIndexOf('.'));
-		
-		name.value = decodeURIComponent(fileNameNoExtension);
-	});
 </script>
 
 <style>
@@ -227,6 +223,11 @@
 	.video-max {
 		width: 100%;
 		height: 100%;
+	}
+	.title {
+		flex-grow: 1;
+		text-align: left;
+		font-size: 1.4em;
 	}
 	.vds-controls {
 		--media-controls-padding: 0px;
@@ -328,6 +329,86 @@
 	{ display: none; }
 </style>
 
+<!-- Time Slider -->
+<style scoped>
+	.media-slider {
+		display: inline-flex;
+		align-items: center;
+		width: 100%;
+		height: 40px;
+		position: relative;
+		contain: layout style;
+		outline: none;
+		pointer-events: auto;
+		cursor: pointer;
+		user-select: none;
+		touch-action: none;
+		/* max-width: 72px; */
+		/** Prevent thumb flowing out of slider (15px = thumb width). */
+		margin: 0 calc(15px / 2);
+		-webkit-user-select: none;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.media-slider[data-focus] .media-slider-track {
+		box-shadow: var(--media-focus-ring, 0 0 0 3px rgb(78 156 246));
+	}
+
+	.media-slider-track {
+		z-index: 0;
+		position: absolute;
+		width: 100%;
+		height: 5px;
+		top: 50%;
+		left: 0;
+		border-radius: 1px;
+		transform: translateY(-50%) translateZ(0);
+		background-color: rgb(255 255 255 / 0.3);
+		contain: strict;
+	}
+
+	.media-slider-track-fill {
+		z-index: 2; /** above progress. */
+		background-color: #f5f5f5;
+		width: var(--slider-fill, 0%);
+		will-change: width;
+	}
+
+	.media-slider-progress {
+		z-index: 1; /** above track. */
+		width: var(--slider-progress, 0%);
+		will-change: width;
+		background-color: rgb(255 255 255 / 0.5);
+	}
+
+	.media-slider-thumb {
+		position: absolute;
+		top: 50%;
+		left: var(--slider-fill);
+		opacity: 0;
+		contain: layout size style;
+		width: 15px;
+		height: 15px;
+		border: 1px solid #cacaca;
+		border-radius: 9999px;
+		background-color: #fff;
+		transform: translate(-50%, -50%) translateZ(0);
+		transition: opacity 0.15s ease-in;
+		pointer-events: none;
+		will-change: left;
+		z-index: 2; /** above track fill. */
+	}
+
+	.media-slider[data-active] .media-slider-thumb {
+		opacity: 1;
+		transition: opacity 0.2s ease-in;
+	}
+
+	.media-slider[data-dragging] .media-slider-thumb {
+		box-shadow: 0 0 0 3px hsla(0, 0%, 100%, 0.4);
+	}
+</style>
+
 <!-- Mute Button -->
 <style scoped>
 	.vds-button:not([data-muted]) .mute-icon,
@@ -350,12 +431,14 @@
 		cursor: pointer;
 		user-select: none;
 		touch-action: none;
-		max-width: 72px;
+		/* max-width: 72px; */
 		/** Prevent thumb flowing out of slider (15px = thumb width). */
 		margin: 0 calc(15px / 2);
 		-webkit-user-select: none;
 		-webkit-tap-highlight-color: transparent;
 	}
+	
+	media-volume-slider.media-slider { max-width: 72px; }
 
 	.media-slider[data-focus] .media-slider-track {
 		box-shadow: var(--media-focus-ring, 0 0 0 3px rgb(78 156 246));

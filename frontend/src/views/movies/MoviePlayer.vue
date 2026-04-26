@@ -6,6 +6,7 @@
 				:source="`${origin}/api/raw/${props.details.file}`"
 				:autoplay="autoplay"
 				:subtitles="subtitles"
+				:name="props.details?.name"
 			/>
 		</div>
 	</div>
