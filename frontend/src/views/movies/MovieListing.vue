@@ -1,4 +1,3 @@
-
 <template>
 	<div class="movies-listing">
 		<div class="options">

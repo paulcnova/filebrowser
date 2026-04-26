@@ -15,6 +15,7 @@
 						<span class="certification" v-if="props.details.certificate">{{ props.details.certificate }}</span>
 						<span class="year">{{ getYear() }}</span>
 						<span class="runtime">{{ getRuntime() }}</span>
+						<span class="rating" v-if="props.details.ratings.tmdb">{{ getTMDBRating() }}</span>
 					</div>
 					<div class="labeled-details">
 						<span class="info-label">
@@ -31,28 +32,39 @@
 					</div>
 				</div>
 			</div>
-			<div class="ratings-section" v-if="props.details.parentalGuide">
-				<div v-for="guide in [props.details.parentalGuide.sex, props.details.parentalGuide.violence, props.details.parentalGuide.profanity, props.details.parentalGuide.drugs, props.details.parentalGuide.scares]" :class="`parental-guide ${guide.category}`">
-					<div :class="`banner ${guide.severity.level}`">
-						<div class="cat-vote">
-							<span v-if="guide.category == 'sex'" class="category">Sex &amp; Nudity</span>
-							<span v-else-if="guide.category == 'violence'" class="category">Violence &amp; Gore</span>
-							<span v-else-if="guide.category == 'profanity'" class="category">Profanity</span>
-							<span v-else-if="guide.category == 'drugs'" class="category">Alcohol, Drugs &amp; Smoking</span>
-							<span v-else-if="guide.category == 'scares'" class="category">Frightening &amp; Intense Scenes</span>
-							<span class="votes">{{ guide.severity.voted }} / {{ guide.severity.max }} voted</span>
-						</div>
-						<div class="severity-level">{{ guide.severity.level }}</div>
-					</div>
-					<div v-for="review in guide.reviews">
-						<span v-if="!review.startsWith('[!SPOILER]')">{{ review }}</span>
-						<span v-else class="spoiler" @click="(ev: any) => ev.target.parentElement.classList.toggle('view')">
-							<span class="spoiler-declaration">SPOILER</span>
-							<span class="spoiler-content">{{ review.substring('[!SPOILER]'.length) }}</span>
-						</span>
-					</div>
+			
+			<div class="parental-guide" v-if="props.details.parentalGuide">
+				<div v-for="guide in [props.details.parentalGuide.sex, props.details.parentalGuide.violence, props.details.parentalGuide.profanity, props.details.parentalGuide.drugs, props.details.parentalGuide.scares]" :class="`guide-section ${guide.category} ${guide.severity.level}`">
+					<span class="category" v-if="guide.category == 'sex'">Sex &amp; Nudity</span>
+					<span class="category" v-else-if="guide.category == 'violence'">Violence &amp; Gore</span>
+					<span class="category" v-else-if="guide.category == 'profanity'">Profanity</span>
+					<span class="category" v-else-if="guide.category == 'drugs'">Alcohol, Drugs, &amp; Smoking</span>
+					<span class="category" v-else-if="guide.category == 'scares'">Frightening &amp; Intense Scenes</span>
+					<span class="severity">{{ guide.severity.voted }} / {{ guide.severity.max }} voted: {{ guide.severity.level }}</span>
 				</div>
 			</div>
+			
+			<div class="movie-info-type-a directors-section" v-if="props.details.directors.length > 0">
+				<span class="movie-info-label">Director(s)</span>
+				<span class="movie-info-content">{{ props.details.directors.join(", ") }}</span>
+			</div>
+			
+			<div class="movie-info-type-a credits-section" v-if="props.details.credits.length > 0">
+				<span class="movie-info-label">Credits</span>
+				<span class="movie-info-content">{{ props.details.credits.join(", ") }}</span>
+			</div>
+			
+			<div class="movie-info-type-b cast-section" v-if="props.details.cast.length > 0">
+				<span class="movie-info-label">Cast</span>
+				<span class="movie-info-content">
+					<span class="movie-info-cast-block" v-for="member in props.details.cast">
+						<span class="role-name">{{ member.role }}</span>
+						<span class="actor-name">{{ member.name }}</span>
+					</span>
+				</span>
+			</div>
+			
+			<div class="intentionally-blank" style="height:15vh;"></div>
 		</div>
 	</div>
 </template>
@@ -90,12 +102,19 @@
 		return `${hours}h ${result}`;
 	}
 	
+	function getTMDBRating(): string {
+		const val = (props.details?.ratings.tmdb?.value || 0) * 10.0;
+		
+		return val.toFixed(1) + "%";
+	}
+	
 	function goToPlayer(): void {
 		router.push({ path: `${route.path}/view` });
 	}
 </script>
 
-<style>
+<!-- Backdrop -->
+<style scoped>
 	.movie-details {
 		position: relative;
 		width: 100%;
@@ -119,30 +138,28 @@
 		width: 100%;
 		height: 100%;
 	}
-	
-	.movie-details .content {
-		display: flex;
+</style>
+
+<!-- Content Outer -->
+<style scoped>
+	/* Desktop */
+	.content-outer {
 		width: 100%;
-		height: 100%;
-	}
-	
-	.movie-details .content-outer {
 		display: flex;
-		width: 100%;
-		height: 100%;
-		padding: 32px;
 		flex-direction: column;
-		color: white;
+		flex-wrap: nowrap;
+		align-items: start;
+		align-content: stretch;
+		justify-content: start;
+		row-gap: 16px;
+		padding-inline: 32px;
+		padding-block: 32px;
+		flex: 1;
 	}
-	
-	.movie-details img.poster {
-		width: 250px;
-		height: 368px;
-		margin-right: 36px;
-		z-index: 2;
-		flex-shrink: 0;
-	}
-	
+</style>
+
+<!-- Action Buttons -->
+<style>
 	.movie-details button.return {
 		position: absolute;
 		top: 16px;
@@ -177,105 +194,257 @@
 		padding: 4px;
 		color: black !important;
 	}
-	
-	.movie-details .info {
+</style>
+
+<!-- Content -->
+<style scoped lang="scss">
+	/* Desktop */
+	.content {
+		width: 100%;
+		height: auto;
 		display: flex;
-		flex-direction: column;
-		flex-grow: 1;
-	}
-	
-	.movie-details .info .title {
-		font-weight: 300;
-		font-size: 50px;
-		line-height: 60px;
-		margin-bottom: 6px;
-	}
-	
-	.movie-details .info .details {
-		padding-left: 7px;
-		margin-bottom: 8px;
-		font-weight: 300;
-		font-size: 20px;
-	}
-	
-	.movie-details .info .details .certification {
-		border: 1px solid;
-		border-radius: 5px;
-		padding: 0 5px;
-		margin-right: 15px;
-	}
-	
-	.movie-details .info .details > span
-	{ margin-right: 14px; }
-	
-	.movie-details .info .info-label {
-		margin: 6px 12px 6px 0;
-		padding: 4px 8px;
-		font-size: 14px;
-		display: inline-block;
-		line-height: 1;
-	}
-	
-	.movie-details .info .info-label .label {
-		margin-bottom: 2px;
-		color: #aaa;
-		font-size: 10px;
-	}
-	
-	.movie-details .info .info-label .info-details {
-		font-weight: 300;
-		font-size: 16px;
-	}
-	
-	.movie-details .info .plot {
-		flex: 1 0 0;
-		margin-top: 8px;
-		text-wrap: balance;
-		font-size: 15px;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: start;
+		align-content: stretch;
+		justify-content: start;
+		column-gap: 36px;
+		min-block-size: 368px;
+		
+		.poster {
+			width: 250px;
+			height: 368px;
+			flex-shrink: 0;
+		}
+		
+		.info {
+			height: auto;
+			display: flex;
+			flex-direction: column;
+			flex-wrap: nowrap;
+			align-items: start;
+			align-content: stretch;
+			justify-content: start;
+			row-gap: 16px;
+			min-block-size: 292px;
+			flex: 1;
+			
+			.title {
+				width: 100%;
+				height: 64px;
+				color: white;
+				font-size: 50px;
+				flex-shrink: 0;
+			}
+			
+			.details {
+				width: 100%;
+				height: auto;
+				display: flex;
+				flex-direction: row;;
+				flex-wrap: nowrap;
+				align-items: center;
+				align-content: stretch;
+				justify-content: start;
+				column-gap: 16px;
+				min-block-size: 64px;
+				
+				.certification {
+					padding: 0px 6px;
+					border: 1px solid white;
+					border-radius: 6px;
+					font-size: 20px;
+					font-weight: 300;
+					min-block-size: 24px;
+					min-inline-size: 32px;
+				}
+				
+				.year, .runtime, .rating {
+					font-size: 20px;
+					flex-shrink: 0;
+				}
+			}
+			
+			.labeled-details {
+				width: 100%;
+				height: auto;
+				display: flex;
+				flex-direction: row;
+				flex-wrap: nowrap;
+				align-items: start;
+				align-content: stretch;
+				justify-content: start;
+				column-gap: 28px;
+				
+				.info-label {
+					display: flex;
+					flex-direction: column;
+					flex-wrap: nowrap;
+					align-items: start;
+					align-content: stretch;
+					justify-content: start;
+					
+					.label {
+						width: 100%;
+						height: 10px;
+						color: #aaa;
+						font-size: 10px;
+						flex-shrink: 0;
+					}
+					
+					.info-details {
+						width: 100%;
+						height: 20px;
+						color: white;
+						font-size: 16px;
+						flex-shrink: 0;
+					}
+				}
+			}
+			
+			.plot {
+				width: 100%;
+				height: 86px;
+				color: white;
+				font-size: 16px;
+				flex-shrink: 0;
+			}
+		}
 	}
 </style>
 
 <!-- Parental Guide -->
-<style scoped>
+<style scoped lang="scss">
 	.parental-guide {
+		width: 100%;
+		height: auto;
 		display: flex;
-		padding: 1em;
-		flex-direction: column;
-		gap: 8px;
-	}
-	
-	.parental-guide .banner {
-		display: flex;
-		padding: 4px 8px;
-		padding-right: 16px;
-		align-content: space-between;
-		align-items: stretch;
-		justify-content: space-between;
-	}
-	
-	.banner.none { background-color: gray; }
-	.banner.mild { background-color: green; }
-	.banner.moderate { background-color: goldenrod; }
-	.banner.severe { background-color: red; }
-	
-	.parental-guide .votes {
-		margin-left: 16px;
-		font-size: 12px;
-	}
-	
-	.parental-guide .spoiler {
-		cursor: pointer;
-		z-index: -1;
-	}
-	
-	.parental-guide .spoiler .spoiler-declaration {
-		background-color: #4d4d4d;
-		color: white;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: start;
+		align-content: stretch;
+		justify-content: start;
+		gap: 16px;
 		padding-inline: 8px;
-		border-radius: 8px;
+		padding-block: 8px;
+		
+		.guide-section {
+			height: 45px;
+			display: flex;
+			flex-direction: row;
+			flex-wrap: nowrap;
+			align-items: start;
+			align-content: stretch;
+			justify-content: space-between;
+			padding-inline: 16px;
+			padding-block: 8px;
+			flex: 1;
+			
+			&.none { background-color: gray; }
+			&.mild { background-color: green; }
+			&.moderate { background-color: goldenrod; }
+			&.severe { background-color: red; }
+			
+			.category {
+				height: 100%;
+				color: white;
+				font-size: 15px;
+				flex-shrink: 0;
+				flex: 1;
+				align-content: center;
+			}
+			
+			.severity {
+				height: 100%;
+				color: white;
+				font-size: 12px;
+				flex-shrink: 0;
+				flex: 1;
+				align-content: center;
+				text-align: right;
+			}
+		}
+	}
+</style>
+
+<!-- Movie Credits -->
+<style scoped lang="scss">
+	.movie-info-type-a,
+	.movie-info-type-b {
+		width: 100%;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: start;
+		align-content: stretch;
+		justify-content: start;
+		justify-content: start;
+		column-gap: 28px;
+		
+		.movie-info-label {
+			width: 72px;
+			min-height: 28px;
+			color: #aaa;
+			font-size: 12px;
+			flex-shrink: 0;
+			text-align: center;
+			align-items: center;
+			align-content: center;
+		}
+		
+		.movie-info-content {
+			min-height: 28px;
+			color: white;
+			font-size: 16px;
+			flex-shrink: 0;
+			flex: 1;
+			text-align: left;
+			align-items: start;
+			align-content: center;
+		}
 	}
 	
-	.parental-guide .spoiler:not(.view) .spoiler-content {
-		filter: blur(4px);
+	.movie-info-type-b .movie-info-content {
+		height: auto;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		align-items: center;
+		align-content: stretch;
+		justify-content: space-between;
+		gap: 16px;
+		padding-inline: 16px;
+		flex: 1;
+		
+		.movie-info-cast-block {
+			display: flex;
+			flex-direction: column;
+			flex-wrap: nowrap;
+			align-items: start;
+			align-content: stretch;
+			justify-content: start;
+			min-height: 36px;
+			min-width: 162px;
+			padding: 8px ;
+			background-color: #123d;
+			
+			.role-name {
+				width: 100%;
+				height: 16px;
+				color: #aaa;
+				font-size: 12px;
+				flex-shrink: 0;
+				text-align: center;
+			}
+			
+			.actor-name {
+				width: 100%;
+				height: 20px;
+				color: white;
+				font-size: 14px;
+				flex-shrink: 0;
+				text-align: center;
+			}
+		}
 	}
 </style>

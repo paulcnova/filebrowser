@@ -61,7 +61,7 @@
 	const viewType = ref<ViewType>(getViewType());
 	const movieIndex = ref<number>(getMovieIndex());
 	
-	title.value = "Casanova - Movies";
+	title.value = "Movies - Casanova";
 	
 	function getMovieIndex(id?: string): number {
 		return movies.value.findIndex(m => m.id == (id ?? `${route.params.id}`));
@@ -81,9 +81,9 @@
 				: ViewType.Player
 			: ViewType.Listing;
 		switch(viewType.value) {
-			default: case ViewType.Listing: title.value = "Casanova - Movies"; break;
-			case ViewType.Details: title.value = `Casanova - ${movies.value[movieIndex.value].name}`; break;
-			case ViewType.Player: title.value = `Casanova - Watching ${movies.value[movieIndex.value].name}`; break;
+			default: case ViewType.Listing: title.value = "Movies - Casanova"; break;
+			case ViewType.Details: title.value = `${movies.value[movieIndex.value].name} - Casanova`; break;
+			case ViewType.Player: title.value = `Watching ${movies.value[movieIndex.value].name} - Casanova`; break;
 		}
 	}
 	
@@ -117,7 +117,10 @@
 		align-items: start;
 		align-content: stretch;
 		justify-content: space-between;
+		width: 100%;
 	}
+	
+	.movie-container { width: 100%; }
 </style>
 
 <!-- Header -->

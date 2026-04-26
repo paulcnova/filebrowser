@@ -1,4 +1,3 @@
-
 <template>
 	<div id="previewer" @touchmove.prevent.stop @wheel.prevent.stop>
 		<div class="preview" v-if="props.details">
