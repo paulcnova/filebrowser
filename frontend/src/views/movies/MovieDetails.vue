@@ -34,20 +34,23 @@
 			<div class="ratings-section" v-if="props.details.parentalGuide">
 				<div v-for="guide in [props.details.parentalGuide.sex, props.details.parentalGuide.violence, props.details.parentalGuide.profanity, props.details.parentalGuide.drugs, props.details.parentalGuide.scares]" :class="`parental-guide ${guide.category}`">
 					<div :class="`banner ${guide.severity.level}`">
-						<span v-if="guide.category == 'sex'" class="category">Sex &amp; Nudity</span>
-						<span v-else-if="guide.category == 'violence'" class="category">Violence &amp; Gore</span>
-						<span v-else-if="guide.category == 'profanity'" class="category">Profanity</span>
-						<span v-else-if="guide.category == 'drugs'" class="category">Alcohol, Drugs &amp; Smoking</span>
-						<span v-else-if="guide.category == 'scares'" class="category">Frightening &amp; Intense Scenes</span>
+						<div class="cat-vote">
+							<span v-if="guide.category == 'sex'" class="category">Sex &amp; Nudity</span>
+							<span v-else-if="guide.category == 'violence'" class="category">Violence &amp; Gore</span>
+							<span v-else-if="guide.category == 'profanity'" class="category">Profanity</span>
+							<span v-else-if="guide.category == 'drugs'" class="category">Alcohol, Drugs &amp; Smoking</span>
+							<span v-else-if="guide.category == 'scares'" class="category">Frightening &amp; Intense Scenes</span>
+							<span class="votes">{{ guide.severity.voted }} / {{ guide.severity.max }} voted</span>
+						</div>
 						<div class="severity-level">{{ guide.severity.level }}</div>
 					</div>
 					<div v-for="review in guide.reviews">
 						<span v-if="!review.startsWith('[!SPOILER]')">{{ review }}</span>
-						<!-- <span class="spoiler">{{ review }}</span> -->
+						<span v-else class="spoiler" @click="(ev: any) => ev.target.parentElement.classList.toggle('view')">
+							<span class="spoiler-declaration">SPOILER</span>
+							<span class="spoiler-content">{{ review.substring('[!SPOILER]'.length) }}</span>
+						</span>
 					</div>
-				</div>
-				<div v-for="guide in props.details.parentalGuide">
-					{{ guide.category }}
 				</div>
 			</div>
 		</div>
@@ -59,7 +62,6 @@
 	import type { MovieDetails } from '@/interface/Listing';
 	import router from '@/router';
 	import url from '@/utils/url';
-	import { computedAsync } from '@vueuse/core';
 	import { useRoute } from 'vue-router';
 	
 	const props = defineProps<{
@@ -238,16 +240,42 @@
 	.parental-guide {
 		display: flex;
 		padding: 1em;
+		flex-direction: column;
+		gap: 8px;
 	}
 	
 	.parental-guide .banner {
 		display: flex;
 		padding: 4px 8px;
 		padding-right: 16px;
+		align-content: space-between;
+		align-items: stretch;
+		justify-content: space-between;
 	}
 	
 	.banner.none { background-color: gray; }
 	.banner.mild { background-color: green; }
-	.banner.moderate { background-color: yellow; }
+	.banner.moderate { background-color: goldenrod; }
 	.banner.severe { background-color: red; }
+	
+	.parental-guide .votes {
+		margin-left: 16px;
+		font-size: 12px;
+	}
+	
+	.parental-guide .spoiler {
+		cursor: pointer;
+		z-index: -1;
+	}
+	
+	.parental-guide .spoiler .spoiler-declaration {
+		background-color: #4d4d4d;
+		color: white;
+		padding-inline: 8px;
+		border-radius: 8px;
+	}
+	
+	.parental-guide .spoiler:not(.view) .spoiler-content {
+		filter: blur(4px);
+	}
 </style>

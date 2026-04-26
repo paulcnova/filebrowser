@@ -1,24 +1,26 @@
 
 <template>
-	<div class="layout-backdrop movies-backdrop"></div>
-	<nav class="header">
-		<div class="icon"></div>
-		<div class="search-bar">
-			<input type="text" placeholder="Search..." class="search-bar-text"/>
-			<button class="search-bar-button" type="submit">
-				<i class="material-icons">search</i>
-			</button>
+	<div class="page-container">
+		<div class="layout-backdrop movies-backdrop"></div>
+		<nav class="header">
+			<div class="icon"></div>
+			<div class="search-bar">
+				<input type="text" placeholder="Search..." class="search-bar-text"/>
+				<button class="search-bar-button" type="submit">
+					<i class="material-icons">search</i>
+				</button>
+			</div>
+			<!-- TODO: Use an icon here or something. -->
+			<RouterLink to="/settings" class="account">
+				<div class="head"></div>
+				<div class="body"></div>
+			</RouterLink>
+		</nav>
+		<div :class="`movie-container ${viewType}`">
+			<component v-if="viewType == ViewType.Listing" :is="currentView"/>
+			<component v-else-if="viewType == ViewType.Details" :is="currentView" :details="currentDetails"/>
+			<component v-else-if="viewType == ViewType.Player" :is="currentView" :details="currentDetails"/>
 		</div>
-		<!-- TODO: Use an icon here or something. -->
-		<RouterLink to="/settings" class="account">
-			<div class="head"></div>
-			<div class="body"></div>
-		</RouterLink>
-	</nav>
-	<div class="movie-container">
-		<component v-if="viewType == ViewType.Listing" :is="currentView"/>
-		<component v-else-if="viewType == ViewType.Details" :is="currentView" :details="currentDetails"/>
-		<component v-else-if="viewType == ViewType.Player" :is="currentView" :details="currentDetails"/>
 	</div>
 </template>
 
@@ -61,24 +63,12 @@
 	
 	title.value = "Casanova - Movies";
 	
-	// (async () => {
-	// 	const imdb = await fetch("https://imdbapi.dev/titles/tt0098635/certificates", {
-	// 		method: "GET",
-	// 		headers: {
-	// 			"Accept": "application/json"
-	// 		}
-	// 	});
-		
-	// 	console.log(imdb);
-	// 	console.log(await imdb.json());
-	// })();
-	
 	function getMovieIndex(id?: string): number {
 		return movies.value.findIndex(m => m.id == (id ?? `${route.params.id}`));
 	}
 	
 	function getViewType(): ViewType {
-		if(route.fullPath == "/movies") { return ViewType.Listing; }
+		if(route.fullPath == "/movies" || route.fullPath == "/movies/") { return ViewType.Listing; }
 		if(route.fullPath.endsWith("/view")) { return ViewType.Player; }
 		return ViewType.Details;
 	}
@@ -118,6 +108,18 @@
 	})
 </script>
 
+<!-- Entire Page -->
+<style scoped>
+	.page-container {
+		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
+		align-items: start;
+		align-content: stretch;
+		justify-content: space-between;
+	}
+</style>
+
 <!-- Header -->
 <style scoped>
 	nav.header {
@@ -126,7 +128,7 @@
 		left: 0;
 		width: 100vw;
 		height: 4em;
-		background-color: #fff0a1;
+		background-color: #166235;
 		box-shadow: 0 10px 15px 4px #0009;
 		z-index: 10;
 		display: flex;

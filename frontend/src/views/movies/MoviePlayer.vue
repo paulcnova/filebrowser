@@ -1,9 +1,9 @@
 
 <template>
 	<div id="previewer" @touchmove.prevent.stop @wheel.prevent.stop>
-		<div class="preview" v-if="previewURL">
+		<div class="preview" v-if="props.details">
 			<VideoPlayer
-				:source="previewURL"
+				:source="`${origin}/api/raw/${props.details.file}`"
 				:autoplay="autoplay"
 				:subtitles="subtitles"
 			/>
@@ -13,15 +13,13 @@
 
 <script setup lang="ts">
 	import VideoPlayer from '@/components/files/VideoPlayer.new.vue';
-	import { useFileStore } from '@/stores/file';
 	import { computed, onMounted, ref } from 'vue';
 	import { files as api } from "@/api";
 	import type { MovieDetails, MovieListing } from '@/interface/Listing';
+	import { origin } from '@/utils/constants';
 	import { useRoute } from 'vue-router';
 	
 	const route = useRoute();
-	const fileStore = useFileStore();
-	const previewURL = ref<string | null>(null);
 	const props = defineProps<{
 		details?: MovieDetails
 	}>();
@@ -33,14 +31,10 @@
 			const listing = JSON.parse(listingRes.content ?? "") as MovieListing;
 			const id = route.params.id.toString();
 			
-			response.value = await api.fetch(listing[id].file);
-			
-			previewURL.value = api.getDownloadURL(response.value, true);
+			response.value = await api.fetch(listing[id].file, undefined, false);
 		}
 		else {
-			response.value = await api.fetch(props.details.file);
-			
-			previewURL.value = api.getDownloadURL(response.value, true);
+			response.value = await api.fetch(props.details.file, undefined, false);
 		}
 	});
 	const subtitles = computed(() => {

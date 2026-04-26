@@ -1,8 +1,8 @@
 
 <template>
 	<div class="movies-listing">
-		<div v-if="width < 960" class="options">
-			<Action icon="back" class="back"/>
+		<div class="options">
+			<Action icon="chevron_left" class="back"/>
 			<div class="options-container">
 				<DropdownModal>
 					<div>{{ currentSorting }}</div>
@@ -19,14 +19,12 @@
 			</div>
 		</div>
 		<div class="content">
-			<div class="movies">
-				<div class="movie-entry" v-for="movie in movies">
-					<RouterLink :to="`/movies/${movie.id}`">
-						<img :src="movie.poster"/>
-						<span class="title">{{ movie.name }}</span>
-						<div class="release-date">{{ getProperDate(movie.released) }}</div>
-					</RouterLink>
-				</div>
+			<div class="movie-entry" v-for="movie in movies">
+				<RouterLink :to="`/movies/${movie.id}`">
+					<img :src="movie.poster"/>
+					<div class="title">{{ movie.name }}</div>
+					<div class="release-date">{{ getProperDate(movie.released) }}</div>
+				</RouterLink>
 			</div>
 		</div>
 	</div>
@@ -36,12 +34,10 @@
 	import { onMounted, ref } from 'vue';
 	import { files as api } from "@/api";
 	import { type MovieDetails, type MovieListing } from '@/interface/Listing';
-	import { RouterLink, useRoute } from 'vue-router';
-	import { useWindowSize } from '@vueuse/core';
+	import { RouterLink } from 'vue-router';
 	import Action from '@/components/header/Action.vue';
 	import DropdownModal from '@/components/DropdownModal.vue';
 	
-	const { width } = useWindowSize()
 	const movies = ref<MovieDetails[]>([]);
 	const sortByItems = {
 		Name: (inv: number) => movies.value.sort((left, right) => inv * left.name.localeCompare(right.name)),
@@ -86,7 +82,92 @@
 	}
 </script>
 
+<!-- Options -->
 <style scoped>
+	/* Desktop */
+	.options {
+		width: 100%;
+		height: 48px;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: nowrap;
+		align-items: start;
+		align-content: stretch;
+		justify-content: space-between;
+		column-gap: 16px;
+		padding-inline: 24px;
+		padding-block: 8px;
+	}
+</style>
+
+<!-- Content -->
+<style scoped>
+	/* Desktop */
+	.content {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		grid-template-rows: 1fr 1fr;
+		grid-template-columns: 1fr 1fr;
+		align-items: start;
+		align-content: start;
+		justify-items: start;
+		justify-content: start;
+		gap: 10px;
+		padding-inline: 20px;
+		padding-block: 20px;
+	}
+</style>
+
+<!-- Poster -->
+<style scoped>
+	/* Desktop */
+	.movie-entry {
+		width: 144px;
+		height: 252px;
+		border-radius: 16px;
+		background-color: #6f4e2e;
+		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
+		align-items: start;
+		align-content: stretch;
+		justify-content: start;
+		flex-shrink: 0;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	
+	.movie-entry > a {
+		width: 100%;
+	}
+	
+	.movie-entry img {
+		width: 144px;
+		height: 212px;
+		flex-shrink: 0;
+	}
+	
+	.movie-entry .title, .movie-entry .release-date {
+		width: 100%;
+		flex-shrink: 0;
+		display: block;
+		text-align: center;
+	}
+	
+	.movie-entry .title {
+		height: 18px;
+		font-size: 12px;
+	}
+	
+	.movie-entry .release-date {
+		height: 16px;
+		font-size: 10px;
+	}
+</style>
+
+<!-- <style scoped>
 	.sort-button-item {
 		display: block;
 		background: none;
@@ -239,7 +320,7 @@
 			height: 16px;
 		}
 	}
-</style>
+</style> -->
 
 <!-- <style scoped>
 	.movies-listing {
