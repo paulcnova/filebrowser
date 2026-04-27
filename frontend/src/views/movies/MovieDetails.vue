@@ -33,6 +33,8 @@
 				</div>
 			</div>
 			
+			<div class="intentionally-blank" style="height:6vh;"></div>
+			
 			<div class="parental-guide" v-if="props.details.parentalGuide">
 				<div v-for="guide in [props.details.parentalGuide.sex, props.details.parentalGuide.violence, props.details.parentalGuide.profanity, props.details.parentalGuide.drugs, props.details.parentalGuide.scares]" :class="`guide-section ${guide.category} ${guide.severity.level}`">
 					<span class="category" v-if="guide.category == 'sex'">Sex &amp; Nudity</span>
@@ -43,6 +45,8 @@
 					<span class="severity">{{ guide.severity.voted }} / {{ guide.severity.max }} voted: {{ guide.severity.level }}</span>
 				</div>
 			</div>
+			
+			<div class="intentionally-blank" style="height:6vh;"></div>
 			
 			<div class="movie-info-type-a directors-section" v-if="props.details.directors.length > 0">
 				<span class="movie-info-label">Director(s)</span>
@@ -141,8 +145,8 @@
 </style>
 
 <!-- Content Outer -->
-<style scoped>
-	/* Desktop */
+<style scoped lang="scss">
+	// Desktop
 	.content-outer {
 		width: 100%;
 		display: flex;
@@ -159,40 +163,42 @@
 </style>
 
 <!-- Action Buttons -->
-<style>
-	.movie-details button.return {
-		position: absolute;
-		top: 16px;
-		left: 16px;
-		z-index: 4;
-	}
-	
-	.movie-details button.play {
-		width: 64px !important;
-		height: 64px !important;
-	}
-	
-	.movie-details button.play i {
-		font-size: 40px !important;
-		padding: 12px !important;
-	}
-	
-	.movie-details button.action {
-		width: 32px;
-		height: 32px;
-		background-color: white;
-		border-radius: 50%;
-	}
-	
-	.movie-details button.action:hover
-	{ background-color: dimgray; }
-	
-	.movie-details button.action:hover i
-	{ color: white !important; }
-	
-	.movie-details button.action i {
-		padding: 4px;
-		color: black !important;
+<style lang="scss">
+	.movie-details button {
+		&.return {
+			position: absolute;
+			top: 16px;
+			left: 16px;
+			z-index: 4;
+		}
+		
+		&.play {
+			width: 64px !important;
+			height: 64px !important;
+			
+			i {
+				font-size: 40px !important;
+				padding: 12px !important;
+			}
+		}
+		
+		&.action {
+			width: 32px;
+			height: 32px;
+			background-color: white;
+			border-radius: 50%;
+			
+			i {
+				padding: 4px;
+				color: black !important;
+			}
+			
+			&:hover {
+				background-color: dimgray;
+				
+				i { color: white !important; }
+			}
+		}
 	}
 </style>
 
@@ -231,7 +237,7 @@
 			
 			.title {
 				width: 100%;
-				height: 64px;
+				min-height: 64px;
 				color: white;
 				font-size: 50px;
 				flex-shrink: 0;
@@ -239,7 +245,6 @@
 			
 			.details {
 				width: 100%;
-				height: auto;
 				display: flex;
 				flex-direction: row;;
 				flex-wrap: nowrap;
@@ -315,55 +320,127 @@
 
 <!-- Parental Guide -->
 <style scoped lang="scss">
-	.parental-guide {
-		width: 100%;
-		height: auto;
-		display: flex;
-		flex-direction: row;
-		flex-wrap: nowrap;
-		align-items: start;
-		align-content: stretch;
-		justify-content: start;
-		gap: 16px;
-		padding-inline: 8px;
-		padding-block: 8px;
-		
-		.guide-section {
-			height: 45px;
+	// Desktop
+	@media screen and (min-width: 1340px) {
+		.parental-guide {
+			width: 100%;
+			height: auto;
 			display: flex;
 			flex-direction: row;
 			flex-wrap: nowrap;
 			align-items: start;
 			align-content: stretch;
-			justify-content: space-between;
-			padding-inline: 16px;
+			justify-content: start;
+			gap: 16px;
+			padding-inline: 8px;
 			padding-block: 8px;
-			flex: 1;
 			
-			&.none { background-color: gray; }
-			&.mild { background-color: green; }
-			&.moderate { background-color: goldenrod; }
-			&.severe { background-color: red; }
-			
-			.category {
-				height: 100%;
-				color: white;
-				font-size: 15px;
-				flex-shrink: 0;
+			.guide-section {
+				height: 45px;
+				display: flex;
+				flex-wrap: nowrap;
+				align-items: center;
+				align-content: stretch;
+				justify-content: space-between;
+				padding-inline: 16px;
+				padding-block: 8px;
 				flex: 1;
-				align-content: center;
-			}
-			
-			.severity {
-				height: 100%;
-				color: white;
-				font-size: 12px;
-				flex-shrink: 0;
-				flex: 1;
-				align-content: center;
-				text-align: right;
+				
+				&:nth-child(2n+1) {
+					border-top-left-radius: 16px;
+					border-bottom-right-radius: 16px;
+				}
+				&:nth-child(2n) {
+					border-top-right-radius: 16px;
+					border-bottom-left-radius: 16px;
+				}
+				
+				&.none { background-color: gray; }
+				&.mild { background-color: green; }
+				&.moderate { background-color: goldenrod; }
+				&.severe { background-color: red; }
+				
+				.category {
+					height: 100%;
+					color: white;
+					font-size: 15px;
+					flex-shrink: 0;
+					flex: 1;
+					align-content: center;
+				}
+				
+				.severity {
+					height: 100%;
+					color: white;
+					font-size: 12px;
+					flex-shrink: 0;
+					flex: 1;
+					align-content: center;
+					text-align: right;
+				}
 			}
 		}
+	}
+	
+	// Desktop (Half-Size)
+	@media screen and (max-width: 1340px) {
+		.parental-guide {
+			width: 100%;
+			height: auto;
+			display: flex;
+			flex-direction: column;
+			flex-wrap: nowrap;
+			align-items: start;
+			align-content: stretch;
+			justify-content: start;
+			gap: 16px;
+			padding-inline: 8px;
+			padding-block: 8px;
+			
+			.guide-section {
+				width: 100%;
+				height: 45px;
+				display: flex;
+				flex-wrap: nowrap;
+				align-items: center;
+				align-content: stretch;
+				justify-content: space-between;
+				padding-inline: 16px;
+				padding-block: 8px;
+				flex: 1;
+				
+				&.none { background-color: gray; }
+				&.mild { background-color: green; }
+				&.moderate { background-color: goldenrod; }
+				&.severe { background-color: red; }
+				
+				.category {
+					height: 100%;
+					color: white;
+					font-size: 15px;
+					flex-shrink: 0;
+					flex: 1;
+					align-content: center;
+				}
+				
+				.severity {
+					height: 100%;
+					color: white;
+					font-size: 12px;
+					flex-shrink: 0;
+					flex: 1;
+					align-content: center;
+					text-align: right;
+				}
+			}
+		}
+	}
+	
+	.parental-guide .guide-section {
+		&.none { background-color: gray; }
+		&.mild { background-color: green; }
+		&.moderate { background-color: goldenrod; }
+		&.severe { background-color: red; }
 	}
 </style>
 
@@ -375,9 +452,8 @@
 		display: flex;
 		flex-direction: row;
 		flex-wrap: nowrap;
-		align-items: start;
+		align-items: center;
 		align-content: stretch;
-		justify-content: start;
 		justify-content: start;
 		column-gap: 28px;
 		
@@ -403,6 +479,8 @@
 			align-content: center;
 		}
 	}
+	
+	.movie-info-type-b { align-items: start; }
 	
 	.movie-info-type-b .movie-info-content {
 		height: auto;

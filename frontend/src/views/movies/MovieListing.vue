@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-	import { onMounted, ref } from 'vue';
+	import { onMounted, ref, watch } from 'vue';
 	import { files as api } from "@/api";
 	import { type MovieDetails, type MovieListing } from '@/interface/Listing';
 	import { RouterLink } from 'vue-router';
@@ -45,18 +45,72 @@
 	};
 	const currentSorting = ref<string>("Name");
 	const isAscending = ref<boolean>(true);
+	const props = defineProps<{
+		searchValue?: string,
+		listing?: MovieDetails[],
+	}>();
 	
 	onMounted(async () => {
-		const listingRes = await api.fetch("/movies/movies.listing.json", undefined, false);
-		const listing = JSON.parse(listingRes.content ?? "") as MovieListing;
-		
-		for(const id in listing) {
-			movies.value.push(listing[id]);
+		if(props.listing) {
+			setupMovies();
 		}
-		movies.value.sort((left, right) => {
-			return left.name.localeCompare(right.name);
-		});
+		else {
+			const listingRes = await api.fetch("/movies/movies.listing.json", undefined, false);
+			const listing = JSON.parse(listingRes.content ?? "") as MovieListing;
+			
+			for(const id in listing) {
+				movies.value.push(listing[id]);
+			}
+			movies.value.sort((left, right) => {
+				return left.name.localeCompare(right.name);
+			});
+		}
 	});
+	
+	watch(props, () => {
+		setupMovies();
+	})
+	
+	function setupMovies() {
+		if(props.listing) {
+			const val = (props.searchValue ?? "").toLowerCase();
+			
+			movies.value = val != "" ? props.listing.filter(detail => {
+				if(/(\d+h(\d+m)?|(\d+h)?\d+m)/.test(val)) {
+					// TODO: Flesh this out better
+					const time = Number(val.replace(/(?:(\d+)h)?(?:(\d+)m)?/, (_, hour, min) => {
+						return (
+							Number(hour ?? 0) * 60
+							+ Number(min ?? 0)
+						) + "";
+					}));
+					console.log(time);
+					if(time > detail.runtime) { return true; }
+				}
+				if(detail.name.toLowerCase().indexOf(val) > -1) {
+					return true;
+				}
+				if(detail.plot.toLowerCase().indexOf(val) > -1) {
+					return true;
+				}
+				if(detail.studio.toLowerCase().indexOf(val) > -1) {
+					return true;
+				}
+				if(detail.genre.findIndex(member => member.toLowerCase().indexOf(val) > -1) > -1) {
+					return true;
+				}
+				if(detail.directors.findIndex(member => member.toLowerCase().indexOf(val) > -1) > -1) {
+					return true;
+				}
+				if(detail.credits.findIndex(member => member.toLowerCase().indexOf(val) > -1) > -1) {
+					return true;
+				}
+				if(detail.cast.findIndex(member => member.name.toLowerCase().indexOf(val) > -1 || member.role.toLowerCase().indexOf(val) > -1) > -1) {
+					return true;
+				}
+			}) : props.listing;
+		}
+	}
 	
 	function updateSorting(name: string, func: (inv: number) => void) {
 		const asc = currentSorting.value != name || !isAscending.value;

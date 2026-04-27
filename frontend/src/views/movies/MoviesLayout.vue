@@ -5,7 +5,7 @@
 		<nav class="header">
 			<div class="icon"></div>
 			<div class="search-bar">
-				<input type="text" placeholder="Search..." class="search-bar-text"/>
+				<input type="text" placeholder="Search..." class="search-bar-text" @keyup="search"/>
 				<button class="search-bar-button" type="submit">
 					<i class="material-icons">search</i>
 				</button>
@@ -17,7 +17,7 @@
 			</RouterLink>
 		</nav>
 		<div :class="`movie-container ${viewType}`">
-			<component v-if="viewType == ViewType.Listing" :is="currentView"/>
+			<component v-if="viewType == ViewType.Listing" :is="currentView" :searchValue="searchValue" :listing="movies"/>
 			<component v-else-if="viewType == ViewType.Details" :is="currentView" :details="currentDetails"/>
 			<component v-else-if="viewType == ViewType.Player" :is="currentView" :details="currentDetails"/>
 		</div>
@@ -30,6 +30,7 @@
 	import { files as api } from "@/api";
 	import type { MovieDetails, MovieListing } from '@/interface/Listing';
 	import { useTitle } from '@vueuse/core';
+import router from '@/router';
 	
 	enum ViewType {
 		Listing = "listing",
@@ -60,6 +61,7 @@
 	});
 	const viewType = ref<ViewType>(getViewType());
 	const movieIndex = ref<number>(getMovieIndex());
+	const searchValue = ref<string>("");
 	
 	title.value = "Movies - Casanova";
 	
@@ -84,6 +86,18 @@
 			default: case ViewType.Listing: title.value = "Movies - Casanova"; break;
 			case ViewType.Details: title.value = `${movies.value[movieIndex.value].name} - Casanova`; break;
 			case ViewType.Player: title.value = `Watching ${movies.value[movieIndex.value].name} - Casanova`; break;
+		}
+		scrollTo(0,0);
+	}
+	
+	function search(ev: Event) {
+		const inp = ev.target as HTMLInputElement;
+		
+		searchValue.value = inp.value;
+		switch(viewType.value) {
+			case ViewType.Details:
+				// TODO: Show modal of movies
+				break;
 		}
 	}
 	
