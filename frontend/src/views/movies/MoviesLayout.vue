@@ -123,7 +123,7 @@ import router from '@/router';
 </script>
 
 <!-- Entire Page -->
-<style scoped>
+<style scoped lang="scss">
 	.page-container {
 		display: flex;
 		flex-direction: column;
@@ -134,11 +134,16 @@ import router from '@/router';
 		width: 100%;
 	}
 	
-	.movie-container { width: 100%; }
+	.movie-container {
+		width: 100%;
+		@media screen and (min-width: 426px) {
+			margin-top: 4em;
+		}
+	}
 </style>
 
 <!-- Header -->
-<style scoped>
+<style scoped lang="scss">
 	nav.header {
 		position: fixed;
 		top: 0;
@@ -155,6 +160,10 @@ import router from '@/router';
 		align-content: stretch;
 		justify-content: space-between;
 		padding-inline: 8px;
+		
+		@media screen and (max-width: 425px) {
+			display: none;
+		}
 	}
 </style>
 

@@ -165,7 +165,7 @@
 		align-items: start;
 		align-content: start;
 		justify-items: start;
-		justify-content: start;
+		justify-content: center;
 		gap: 10px;
 		padding-inline: 20px;
 		padding-block: 20px;
@@ -173,11 +173,12 @@
 </style>
 
 <!-- Poster -->
-<style scoped>
-	/* Desktop */
+<style scoped lang="scss">
+	@use "sass:math";
+	// Desktop
 	.movie-entry {
-		width: 144px;
-		height: 252px;
+		width: calc(25% - 80px);
+		max-width: 250px;
 		border-radius: 16px;
 		background-color: #6f4e2e;
 		display: flex;
@@ -190,6 +191,14 @@
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
+		
+		@media screen and (max-width: 768px) {
+			width: calc(35% - 20px);
+		}
+		
+		@media screen and (max-width: 425px) {
+			width: calc(50% - 5px);
+		}
 	}
 	
 	.movie-entry > a {
@@ -197,8 +206,6 @@
 	}
 	
 	.movie-entry img {
-		width: 144px;
-		height: 212px;
 		flex-shrink: 0;
 	}
 	
@@ -219,203 +226,3 @@
 		font-size: 10px;
 	}
 </style>
-
-<!-- <style scoped>
-	.sort-button-item {
-		display: block;
-		background: none;
-		color: white;
-		border: none;
-		width: 100%;
-		height: 32px;
-		text-align: left;
-		cursor: pointer;
-	}
-</style>
-
-<style scoped>
-	@media (max-width: 960px) {
-		.movies-listing {
-			display: flex;
-			flex-direction: column;
-			flex-wrap: nowrap;
-			align-items: start;
-			align-content: stretch;
-			justify-content: space-between;
-			flex-grow: 1;
-			margin-top: 1em;
-		}
-		
-		.options {
-			width: 100%;
-			height: 48px;
-			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			align-items: start;
-			align-content: stretch;
-			justify-content: space-between;
-			column-gap: 16px;
-			padding-inline-start: 24px;
-			padding-inline-end: 24px;
-			padding-block-start: 8px;
-			padding-block-end: 8px;
-		}
-		
-		.options .back {
-			width: 32px;
-			height: 32px;
-			background-color: #fff;
-			flex-shrink: 0;
-		}
-		
-		.options-container {
-			height: 32px;
-			display: flex;
-			flex-direction: row-reverse;
-			flex-wrap: nowrap;
-			align-items: start;
-			align-content: stretch;
-			justify-content: end;
-			column-gap: 16px;
-			flex-shrink: 0;
-			flex: 1;
-		}
-		
-		.options-container a {
-			width: 32px;
-			height: 32px;
-			border-radius: 8px;
-			background-color: #fff;
-			flex-shrink: 0;
-		}
-		
-		.content {
-			display: flex;
-			flex-direction: row;
-			flex-wrap: nowrap;
-			grid-template-rows: 1fr 1fr;
-			grid-template-columns: 1fr 1fr;
-			align-items: start;
-			align-content: stretch;
-			justify-items: start;
-			justify-content: start;
-			flex-shrink: 0;
-		}
-		
-		.content .movies {
-			height: 100%;
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-			grid-template-rows: 1fr 1fr;
-			grid-template-columns: 1fr 1fr;
-			align-items: start;
-			align-content: start;
-			justify-items: start;
-			justify-content: start;
-			gap: 10px;
-			padding-inline: 20px;
-			padding-block: 20px;
-			flex: 1;
-		}
-		
-		.content .movies .movie-entry {
-			width: 144px;
-			height: 252px;
-			background-color: #fff;
-			display: flex;
-			flex-direction: column-reverse;
-			flex-wrap: nowrap;
-			align-items: start;
-			align-content: stretch;
-			justify-content: start;
-			flex-shrink: 0;
-			border-radius: 8px;
-			overflow: hidden;
-		}
-		
-		.content .movies .movie-entry:hover {
-			z-index: 2;
-			box-shadow: 0 0 16px dodgerblue;
-			transition: all 200ms ease-in;
-		}
-		
-		.content .movies .movie-entry > a {
-			width: 144px;
-		}
-		
-		.content .movies .movie-entry img {
-			width: 144px;
-			height: 212px;
-			flex-shrink: 0;
-		}
-		
-		.content .movies .movie-entry .title,
-		.content .movies .movie-entry .release-date {
-			display: block;
-			width: 100%;
-			height: 24px;
-			color: #000;
-			font-size: 12px;
-			font-weight: 400;
-			line-height: 1.2;
-			flex-shrink: 0;
-			text-align: center;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			white-space: nowrap;
-			padding: 0 6px;
-		}
-		
-		.content .movies .movie-entry .release-date {
-			font-size: 10px;
-			height: 16px;
-		}
-	}
-</style> -->
-
-<!-- <style scoped>
-	.movies-listing {
-		display: flex;
-		gap: 10px;
-	}
-	
-	.movie-entry-container {
-		display: flex;
-		flex-wrap: wrap;
-		padding: 32px;
-		justify-content: center;
-	}
-	
-	.left-sidebar {
-		/* width: 280px;
-		background: navy; */
-		flex: none;
-	}
-	
-	.movie-entry {
-		display: inline-block;
-		width: 173px;
-		height: 279px;
-	}
-	.movie-entry a {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-	.movie-entry img {
-		width: 153px;
-		height: 226px;
-	}
-	.movie-entry .title,
-	.movie-entry .release-date {
-		font-size: 12px;
-		width: 100%;
-		max-width: 100%;
-		text-align: center;
-		text-overflow: ellipsis !important;
-		white-space: nowrap !important;
-		overflow: hidden !important;
-	}
-</style> -->
