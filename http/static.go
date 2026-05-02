@@ -1,12 +1,12 @@
 package fbhttp
 
 import (
+	"compress/gzip"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/fs"
 	"io"
-	"compress/gzip"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -15,10 +15,10 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/filebrowser/filebrowser/v2/auth"
-	"github.com/filebrowser/filebrowser/v2/settings"
-	"github.com/filebrowser/filebrowser/v2/storage"
-	"github.com/filebrowser/filebrowser/v2/version"
+	"github.com/paulcnova/filebrowser/v2/auth"
+	"github.com/paulcnova/filebrowser/v2/settings"
+	"github.com/paulcnova/filebrowser/v2/storage"
+	"github.com/paulcnova/filebrowser/v2/version"
 )
 
 func handleWithStaticData(w http.ResponseWriter, _ *http.Request, d *data, fSys fs.FS, file, contentType string) (int, error) {
@@ -153,7 +153,7 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 		defer f.Close()
 
 		acceptEncoding := r.Header.Get("Accept-Encoding")
-		if strings.Contains(acceptEncoding, "gzip") {		
+		if strings.Contains(acceptEncoding, "gzip") {
 			w.Header().Set("Content-Encoding", "gzip")
 			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
 
@@ -168,7 +168,7 @@ func getStaticHandlers(store *storage.Storage, server *settings.Server, assetsFs
 			defer gzReader.Close()
 
 			w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
-			
+
 			if _, err := io.Copy(w, gzReader); err != nil {
 				return http.StatusInternalServerError, err
 			}

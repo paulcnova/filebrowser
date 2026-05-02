@@ -12,9 +12,9 @@ import (
 
 	"github.com/mholt/archives"
 
-	"github.com/filebrowser/filebrowser/v2/files"
-	"github.com/filebrowser/filebrowser/v2/fileutils"
-	"github.com/filebrowser/filebrowser/v2/users"
+	"github.com/paulcnova/filebrowser/v2/files"
+	"github.com/paulcnova/filebrowser/v2/fileutils"
+	"github.com/paulcnova/filebrowser/v2/users"
 )
 
 func slashClean(name string) string {
